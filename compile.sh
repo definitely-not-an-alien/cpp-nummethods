@@ -1,0 +1,3 @@
+#!/bin/bash
+g++ -std=c++11 -fdiagnostics-color=always -w -lpthread -lutil -ldl -I/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/include/python3.13/ -I/opt/homebrew/lib/python3.13/site-packages/numpy/_core/include/ -Ilib -L/opt/homebrew/Cellar/python@3.13/3.13.5/Frameworks/Python.framework/Versions/3.13/lib/ -lpython3.13 -g src/tests/testing.cpp -o src/tests/testing
+./src/tests/testing
