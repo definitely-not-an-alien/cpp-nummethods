@@ -216,14 +216,9 @@ template <typename T> class Matrix {
             nums[1] = (T*)malloc(elements*sizeof(T));
             memcpy(nums[0],arr1,elements*sizeof(T));
             memcpy(nums[1],arr2,elements*sizeof(T));
-            rind = (uint32_t*)malloc(rows*sizeof(uint32_t));
-            cind = (uint32_t*)malloc(cols*sizeof(uint32_t));
-            for(int i=0;i<rows;i++){ rind[i]=i; }
-            for(int i=0;i<cols;i++){ cind[i]=i; }
         }
-        
+
     public:
-        uint32_t *rind, *cind;
         // Constructors
         Matrix(){
         }
@@ -236,10 +231,6 @@ template <typename T> class Matrix {
             nums[1] = (T*)malloc(elements*sizeof(T));
             memset(nums[0],0,elements*sizeof(T));
             memset(nums[1],0,elements*sizeof(T));
-            rind = (uint32_t*)malloc(rows*sizeof(uint32_t));
-            cind = (uint32_t*)malloc(cols*sizeof(uint32_t));
-            for(int i=0;i<rows;i++){ rind[i]=i; }
-            for(int i=0;i<cols;i++){ cind[i]=i; }
         }
         // Matrix of size r * c
         Matrix(uint32_t r, uint32_t c, T* dataArr){
@@ -254,10 +245,6 @@ template <typename T> class Matrix {
                     nums[1][j*r+i]=*(dataArr+i*c+j);
                 }
             }
-            rind = (uint32_t*)malloc(rows*sizeof(uint32_t));
-            cind = (uint32_t*)malloc(cols*sizeof(uint32_t));
-            for(int i=0;i<rows;i++){ rind[i]=i; }
-            for(int i=0;i<cols;i++){ cind[i]=i; }
         }
         // Destructor
         ~Matrix(){
@@ -281,24 +268,9 @@ template <typename T> class Matrix {
         }
         // Access
         // 0-based array access (read only): M[r][c]
-        class unordered {
-            protected:
-                T* ind;
-                const Matrix<T>& parent;
-            public:
-                unordered(T* x,const  Matrix<T>& par) : parent(par){
-                    ind = x;
-                    // parent = par;
-                }
-                T operator[] (int c) const {
-                    assert(c>=0&&c<parent.getCols());
-                    return *(parent.cind[c]+ind);
-                }
-        };
-        unordered operator[] (int r) const {
+        T* operator[] (int r) const {
             assert(r>=0&&r<rows);
-            unordered temp(nums[0]+rind[r]*cols,*this);
-            return temp;
+            return nums[0]+r*cols;
         }
         // Gather row as array
         T* row(int r) const{
