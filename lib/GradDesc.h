@@ -185,21 +185,17 @@ template <typename T> class NumVector {
             free(arr);
             return res;
         }
-        // First non-zero entry, returns 0 if there are no non-zero entries
-        T leading() const {
-            T *ittr = nums;
-            for(;ittr!=nums+size;ittr++){
-                if(*ittr!=0)return(*ittr);
-            }
-            return 0;
-        }
-        // Position of first non-zero entry, returns -1 if there are no non-zero entries
-        uint32_t leadPos() const {
+        // __entry: {index (0 based), value} of first non-zero entry, returns {size, 0} if there are no non-zero entries
+        struct __entry {
+            uint32_t index;
+            T value;
+        };
+        __entry leading() const {
             T *ittr = nums;
             for(uint32_t pos = 0;ittr!=nums+size;ittr++,pos++){
-                if(*ittr!=0)return(pos);
+                if(*ittr!=0)return{pos,(*ittr)};
             }
-            return -1;
+            return {(uint32_t)size,0};
         }
         /*
         TODO: implement fixed size storage of nums (done)
@@ -334,20 +330,20 @@ template <typename T> class Matrix {
             }
         }
         // Set column c based on array
-        void setRow(uint32_t c, T* that){
+        void setCol(uint32_t c, T* that){
             assert(c>=0&&c<cols);
             memcpy(nums[1][c*rows],that,rows);
             for(uint32_t i=0;i<rows;i++){
-                nums[1][i*cols+r]=that[i];
+                nums[1][i*cols+c]=that[i];
             }
         }
         // Set column c based on NumVector
-        void setRow(uint32_t r, NumVector<T> that){
+        void setCol(uint32_t c, NumVector<T> that){
             assert(c>=0&&c<cols);
             assert(that.getSize()==rows);
             memcpy(nums[1][c*rows],that,rows);
             for(uint32_t i=0;i<rows;i++){
-                nums[1][i*cols+r]=that[i];
+                nums[1][i*cols+c]=that[i];
             }
         }
         // Returns the transpose
@@ -561,9 +557,13 @@ template <typename T> class Matrix {
         }
         // Row echelon form reduction (without pivoting)
         Matrix<T> echRedNoPivot() const{
-            uint32_t i = 0, j = 0;
+            uint32_t i = 0, j = 0, currLead = 0;
             for(i=0;i<rows;i++){
-
+                NumVector<T>curr = this->extractNumRow(i);
+                assert(curr.leading().index>=currLead);
+                for(j=i+1;j<rows;j++){
+                    
+                }
             }
         }
         // Pivoting
