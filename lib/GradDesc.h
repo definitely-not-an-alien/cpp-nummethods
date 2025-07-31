@@ -182,12 +182,24 @@ template <typename T> class NumVector {
                 (*ittr2) = (float)(*ittr) / norm;
             }
             NumVector<float> res(size,arr);
-            for(int i=0;i<size;i++){
-                std::cerr<<res[i]<<" ";
-            }
-            std::cerr<<"\n";
             free(arr);
             return res;
+        }
+        // First non-zero entry, returns 0 if there are no non-zero entries
+        T leading() const {
+            T *ittr = nums;
+            for(;ittr!=nums+size;ittr++){
+                if(*ittr!=0)return(*ittr);
+            }
+            return 0;
+        }
+        // Position of first non-zero entry, returns -1 if there are no non-zero entries
+        uint32_t leadPos() const {
+            T *ittr = nums;
+            for(uint32_t pos = 0;ittr!=nums+size;ittr++,pos++){
+                if(*ittr!=0)return(pos);
+            }
+            return -1;
         }
         /*
         TODO: implement fixed size storage of nums (done)
@@ -277,16 +289,66 @@ template <typename T> class Matrix {
             assert(r>=0&&r<rows);
             return nums[0]+r*cols;
         }
+        // Extract row as NumVector
+        NumVector<T> extractNumRow(int r) const{
+            assert(r>=0&&r<rows);
+            T* arr = (T*)malloc(cols*sizeof(T));
+            memcpy(arr,nums[0]+r*cols,cols*sizeof(T));
+            NumVector<T> ret(cols,arr);
+            return ret;
+        }
         // Gather column as array
         T* col(int c) const {
             assert(c>=0&&c<cols);
             return nums[1]+c*rows;
+        }
+        // Extract column as NumVector
+        NumVector<T> extractNumCol(int c) const{
+            assert(c>=0&&c<cols);
+            T* arr = (T*)malloc(rows*sizeof(T));
+            memcpy(arr,nums[1]+c*rows,rows*sizeof(T));
+            NumVector<T> ret(rows,arr);
+            return ret;
         }
         // Set particular element
         void set(int r, int c, int val){
             assert(r>=0&&r<rows&&c>=0&&c<cols);
             nums[0][r*cols+c]=val;
             nums[1][c*rows+r]=val;
+        }
+        // Set row r based on array
+        void setRow(uint32_t r, T* that){
+            assert(r>=0&&r<rows);
+            memcpy(nums[0][r*cols],that,cols);
+            for(uint32_t i=0;i<cols;i++){
+                nums[1][i*rows+r]=that[i];
+            }
+        }
+        // Set row r based on NumVector
+        void setRow(uint32_t r, NumVector<T> that){
+            assert(r>=0&&r<rows);
+            assert(that.getSize()==cols);
+            memcpy(nums[0][r*cols],that.getNums(),cols);
+            for(uint32_t i=0;i<cols;i++){
+                nums[1][i*rows+r]=that[i];
+            }
+        }
+        // Set column c based on array
+        void setRow(uint32_t c, T* that){
+            assert(c>=0&&c<cols);
+            memcpy(nums[1][c*rows],that,rows);
+            for(uint32_t i=0;i<rows;i++){
+                nums[1][i*cols+r]=that[i];
+            }
+        }
+        // Set column c based on NumVector
+        void setRow(uint32_t r, NumVector<T> that){
+            assert(c>=0&&c<cols);
+            assert(that.getSize()==rows);
+            memcpy(nums[1][c*rows],that,rows);
+            for(uint32_t i=0;i<rows;i++){
+                nums[1][i*cols+r]=that[i];
+            }
         }
         // Returns the transpose
         Matrix<T> transposed() const{
@@ -497,9 +559,12 @@ template <typename T> class Matrix {
             (*this) = (*this) * that;
             return (*this);
         }
-        // Echelon form reduction (without pivoting)
+        // Row echelon form reduction (without pivoting)
         Matrix<T> echRedNoPivot() const{
-            
+            uint32_t i = 0, j = 0;
+            for(i=0;i<rows;i++){
+
+            }
         }
         // Pivoting
         Matrix<T> pivot() const{
