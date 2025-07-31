@@ -9,4 +9,4 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 
 ## Linear Algebra
 ### ```NumVector``` class
-
+Note: less compatible with ```Matrix``` classes and subclasses - use ```MatVector``` as a numerical vector instead
