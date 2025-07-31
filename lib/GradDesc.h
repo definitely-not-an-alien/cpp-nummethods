@@ -1,5 +1,6 @@
-#include <Python.h>
+// #include <Python.h>
 // #include "matplotlibcpp.h"
+#include <cassert>
 #include <iostream>
 #include <cmath>
 #include <limits>
@@ -206,11 +207,15 @@ template <typename T> class NumVector {
                 }
             }
         }
+        // Zero vector
+        template <typename T2> friend NumVector<T2> Zero(size_t sz);
+        // en base vector
+        template <typename T2> friend NumVector<T2> Unit(size_t sz, uint32_t n);
         /*
         TODO: implement fixed size storage of nums (done)
         implement vector arithmetic (addition, dot product, scaling) (done)
         implement euclidean norm (done)
-        implement standard vectors
+        implement standard vectors (done)
         implement nomralisation of vectors (done)
         */
 };
@@ -218,7 +223,17 @@ template <typename T> class NumVector {
 template <typename T> NumVector<T> operator* (T const& factor, NumVector<T> that) {
     return that * factor;
 }
-
+// Zero vector of size sz
+template<typename T> NumVector<T> Zero(size_t sz) {
+    NumVector<T> res(sz);
+    return sz;
+}
+// en base vector
+template <typename T> NumVector<T> Unit(size_t sz, uint32_t n){
+    NumVector<T> res = Zero<T>(sz);
+    res[n] = 1;
+    return res;
+}
 template <typename T> T __firstArg(T a, T b){
     return a;
 }
@@ -682,7 +697,63 @@ template <typename T> class Matrix {
             return res;
         }
         // Determinant
-        
+        float determinant() const{
+            if(rows!=cols) return 0;
+            int i = 0, j = 0, currLead=0, k=0;
+            float det = 1;
+            Matrix<float> res = this->convert();
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(res[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k){
+                    det *= -1;
+                    res.rswap(k,j);
+                }
+                NumVector<float>curr = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)leadVal);
+                    det *= (float)leadVal;
+                    curr.adjust();
+                    res.setRow(i,curr);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+            }
+            for(i=0;i<rows;i++){
+                det *= res[i][i];
+            }
+            return det;
+        }
         // Matrix inverse
         
         /*

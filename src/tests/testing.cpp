@@ -10,6 +10,12 @@ template <typename T> void printMat(numMethods::Matrix<T> &x){
         cout<<"\n";
     }
 }
+template <typename T> void printVec(numMethods::NumVector<T> &x){
+    for(int i=0;i<x.getSize();i++){
+        cout<<x[i]<<" ";
+    }
+    cout<<"\n";
+}
 int gcdc(int a, int b){
     if(b==0) return a;
     else return gcdc(b, a%b);
@@ -148,4 +154,13 @@ int main(){
     printMat(m5);
     m5 = m1.RREF();
     printMat(m5);
+    numMethods::NumVector<int> r=numMethods::Unit<int>(5,1);
+    printVec(r);
+    int mat3[2][2] = {
+        {2, 1},
+        {1, 0}
+    };
+    m1 = *(new numMethods::Matrix<int>(2,2,(int*)mat3));
+    printMat(m1);
+    cout<<m1.determinant()<<"\n";
 }
