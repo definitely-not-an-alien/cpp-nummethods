@@ -690,6 +690,7 @@ template <typename T> class Matrix {
         implement transpose (done)
         implement swapping (done)
         implement matrix arithmetic (addition (done), multiplication (done!!!!), scaling (done))
+        implement row reduction (done)
         implement matrix inverse, determinant
         implement standard matrices
         implement rank
