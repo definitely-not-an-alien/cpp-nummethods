@@ -163,4 +163,6 @@ int main(){
     m1 = *(new numMethods::Matrix<int>(2,2,(int*)mat3));
     printMat(m1);
     cout<<m1.determinant()<<"\n";
+    m5 = m1.inverse();
+    printMat(m5);
 }

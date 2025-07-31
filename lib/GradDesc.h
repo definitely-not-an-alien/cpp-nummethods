@@ -14,6 +14,11 @@ namespace numMethods{
 // constants
 #define EPS numeric_limits<double>::epsilon()
 
+// Matrix class for any number type
+template <typename T> class Matrix;
+// Vector class for any number type, assumed to be column vector
+template <typename T> class NumVector;
+
 // Vector class for any number type, assumed to be column vector
 template <typename T> class NumVector {
     protected:
@@ -207,10 +212,12 @@ template <typename T> class NumVector {
                 }
             }
         }
+
+        // Standard vectors
         // Zero vector
-        template <typename T2> friend NumVector<T2> Zero(size_t sz);
+        template <typename T2> friend NumVector<T2> ZeroVect(size_t sz);
         // en base vector
-        template <typename T2> friend NumVector<T2> Unit(size_t sz, uint32_t n);
+        template <typename T2> friend NumVector<T2> UnitVect(size_t sz, uint32_t n);
         /*
         TODO: implement fixed size storage of nums (done)
         implement vector arithmetic (addition, dot product, scaling) (done)
@@ -594,6 +601,13 @@ template <typename T> class Matrix {
             Matrix<float>res(rows,cols,arr[0],arr[1]);
             return res;
         }
+
+        // Standard matrices
+        // Zero matrix
+        template <typename T2> friend Matrix<T2> ZeroMat(size_t dim);
+        // Identity matrix
+        template <typename T2> friend Matrix<T2> Iden(size_t dim);
+
         // Row echelon form reduction (without pivoting)
         Matrix<T> echRedNoPivot(std::function<T(T,T)> coTarg=__firstArg<T>, std::function<T(T,T)>coLead=__firstArg<T>) const{
             uint32_t i = 0, j = 0, currLead=0;
@@ -755,7 +769,67 @@ template <typename T> class Matrix {
             return det;
         }
         // Matrix inverse
-        
+        Matrix<float> inverse() const {
+            assert(this->determinant() != 0.0);
+            int i = 0, j = 0, currLead=0, k=0;
+            Matrix<float> temp = (this->convert()), res = Iden<float>(rows);
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(temp[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k){
+                    res.rswap(k,j);
+                    temp.rswap(k,j);
+                }
+                NumVector<float>curr = temp.extractNumRow(k), currInv = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = temp.extractNumRow(j),targInv = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        targInv -= uValCurr * currInv;
+                        target.adjust();
+                        targInv.adjust();
+                        temp.setRow(j,target);
+                        res.setRow(j,targInv);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = temp.extractNumRow(i), currInv = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)leadVal);
+                    curr.adjust();
+                    currInv *= (1.0/(float)leadVal);
+                    currInv.adjust();
+                    temp.setRow(i,curr);
+                    res.setRow(i,currInv);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = temp.extractNumRow(j),targInv = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        targInv -= targLead * currInv;
+                        targInv.adjust();
+                        temp.setRow(j,target);
+                        res.setRow(j,targInv);
+                    }
+                }
+            }
+            return res;
+        }
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)
@@ -775,6 +849,21 @@ template <typename T> class Matrix {
 template<typename T> Matrix<T> operator*(T const& factor, Matrix<T> that){
     return that * factor;
 }
+// Standard matrices
+// Zero matrix
+template <typename T> Matrix<T> ZeroMat(size_t dim){
+    Matrix<T>res(dim,dim);
+    return res;
+}
+// Identity matrix
+template <typename T> Matrix<T> Iden(size_t dim){
+    Matrix<T>res(dim,dim);
+    for(int i=0;i<dim;i++){
+        res.set(i,i,1);
+    }
+    return res;
+}
+
 // Column vector class for any number type, supports vector operations (implemented as n * 1 matrix with additional vector arithmetic)
 template <typename T> class MatVector : protected Matrix<T> {
     protected:
