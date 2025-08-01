@@ -5,8 +5,17 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 ## Documentation
 
 ### Contents
-[Linear Algebra](#linear-algebra)
+- [Linear Algebra](#linear-algebra)
+- * `NumVector` class
+- * `Matrix` class
+- [Numerical Calculus](#numerical-calculus)
+- * `Differentiable` class
+- [Numerical Optimisation](#numerical-optimisation)
 
 ## Linear Algebra
 ### ```NumVector``` class
-Note: less compatible with ```Matrix``` classes and subclasses - use ```MatVector``` as a numerical vector instead
+Class for numerical vectors
+
+## Numerical Calculus
+
+## Numerical Optimisation
