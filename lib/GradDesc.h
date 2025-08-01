@@ -1,16 +1,35 @@
-#include <Python.h>
-#include "matplotlibcpp.h"
+// #include <Python.h>
+// #include "matplotlibcpp.h"
+#include <cassert>
 #include <iostream>
 #include <cmath>
 #include <limits>
 #include <algorithm>
+#include <functional>
 using namespace std;
 
-namespace plt = matplotlibcpp;
+// namespace plt = matplotlibcpp;
 
 namespace numMethods{
 // constants
 #define EPS numeric_limits<double>::epsilon()
+
+// Matrix class for any number type
+template <typename T> class Matrix;
+// Standard matrices
+// Zero matrix
+template <typename T> Matrix<T> ZeroMat(size_t dim);
+// Identity matrix
+template <typename T> Matrix<T> Iden(size_t dim);
+
+// Vector class for any number type, assumed to be column vector
+template <typename T> class NumVector;
+// Standard vectors
+// Zero vector
+template <typename T2> NumVector<T2> ZeroVect(size_t sz);
+// en base vector
+template <typename T2> NumVector<T2> UnitVect(size_t sz, uint32_t n);
+
 
 // Vector class for any number type, assumed to be column vector
 template <typename T> class NumVector {
@@ -173,7 +192,7 @@ template <typename T> class NumVector {
         // Normalisation
         // Normalising the vector, returns a NumVector of floats
         NumVector<float> normalise() const {
-            float norm = (*this).norm();
+            float norm = this->norm();
             assert(norm > 0);
             float *arr = (float*)malloc(size*sizeof(float));
             T *ittr = nums;
@@ -182,18 +201,41 @@ template <typename T> class NumVector {
                 (*ittr2) = (float)(*ittr) / norm;
             }
             NumVector<float> res(size,arr);
-            for(int i=0;i<size;i++){
-                std::cerr<<res[i]<<" ";
-            }
-            std::cerr<<"\n";
             free(arr);
             return res;
         }
+        // __entry: {index (0 based), value} of first non-zero entry, returns {size, 0} if there are no non-zero entries
+        struct __entry {
+            uint32_t index;
+            T value;
+        };
+        __entry leading() const {
+            T *ittr = nums;
+            for(uint32_t pos = 0;ittr!=nums+size;ittr++,pos++){
+                if(*ittr!=0)return{pos,(*ittr)};
+            }
+            return {(uint32_t)size,0};
+        }
+        // Adjust for floating point errors
+        void adjust() {
+            for(uint32_t pos=0;pos<size;pos++){
+                if(*(nums+pos) == 0.000){
+                    *(nums+pos) = +0.0;
+                }
+            }
+        }
+
+        // Standard vectors
+        // Zero vector
+        template <typename T2> friend NumVector<T2> ZeroVect(size_t sz);
+        // en base vector
+        template <typename T2> friend NumVector<T2> UnitVect(size_t sz, uint32_t n);
+
         /*
         TODO: implement fixed size storage of nums (done)
         implement vector arithmetic (addition, dot product, scaling) (done)
         implement euclidean norm (done)
-        implement standard vectors
+        implement standard vectors (done)
         implement nomralisation of vectors (done)
         */
 };
@@ -201,12 +243,30 @@ template <typename T> class NumVector {
 template <typename T> NumVector<T> operator* (T const& factor, NumVector<T> that) {
     return that * factor;
 }
-
+// Zero vector of size sz
+template<typename T> NumVector<T> ZeroVect(size_t sz) {
+    NumVector<T> res(sz);
+    return sz;
+}
+// en base vector
+template <typename T> NumVector<T> UnitVect(size_t sz, uint32_t n){
+    NumVector<T> res = ZeroVect<T>(sz);
+    res[n] = 1;
+    return res;
+}
+template <typename T> T __firstArg(T a, T b){
+    return a;
+}
 // Matrix class for any number type
 template <typename T> class Matrix {
     protected:
         size_t rows = 0, cols = 0, elements = 0;
         T *nums[2]; // this implementation is gonna be cursed :fire:
+        
+        public:
+        // Constructors
+        Matrix(){
+        }
         // Constructor for setting everything directly
         Matrix <T> (uint32_t r, uint32_t c, T *arr1, T *arr2){
             rows = r;
@@ -216,11 +276,6 @@ template <typename T> class Matrix {
             nums[1] = (T*)malloc(elements*sizeof(T));
             memcpy(nums[0],arr1,elements*sizeof(T));
             memcpy(nums[1],arr2,elements*sizeof(T));
-        }
-
-    public:
-        // Constructors
-        Matrix(){
         }
         // Empty matrix of size r * c
         Matrix(uint32_t r, uint32_t c){
@@ -277,16 +332,66 @@ template <typename T> class Matrix {
             assert(r>=0&&r<rows);
             return nums[0]+r*cols;
         }
+        // Extract row as NumVector
+        NumVector<T> extractNumRow(int r) const{
+            assert(r>=0&&r<rows);
+            T* arr = (T*)malloc(cols*sizeof(T));
+            memcpy(arr,nums[0]+r*cols,cols*sizeof(T));
+            NumVector<T> res(cols,arr);
+            return res;
+        }
         // Gather column as array
         T* col(int c) const {
             assert(c>=0&&c<cols);
             return nums[1]+c*rows;
         }
+        // Extract column as NumVector
+        NumVector<T> extractNumCol(int c) const{
+            assert(c>=0&&c<cols);
+            T* arr = (T*)malloc(rows*sizeof(T));
+            memcpy(arr,nums[1]+c*rows,rows*sizeof(T));
+            NumVector<T> res(rows,arr);
+            return res;
+        }
         // Set particular element
-        void set(int r, int c, int val){
+        void set(int r, int c, T val){
             assert(r>=0&&r<rows&&c>=0&&c<cols);
             nums[0][r*cols+c]=val;
             nums[1][c*rows+r]=val;
+        }
+        // Set row r based on array
+        void setRow(uint32_t r, T* that){
+            assert(r>=0&&r<rows);
+            memcpy(nums[0]+r*cols,that,cols*sizeof(T));
+            for(uint32_t i=0;i<cols;i++){
+                nums[1][i*rows+r]=that[i];
+            }
+        }
+        // Set row r based on NumVector
+        void setRow(uint32_t r, NumVector<T> that){
+            assert(r>=0&&r<rows);
+            assert(that.getSize()==cols);
+            memcpy(nums[0]+r*cols,that.getNums(),cols*sizeof(T));
+            for(uint32_t i=0;i<cols;i++){
+                nums[1][i*rows+r]=that[i];
+            }
+        }
+        // Set column c based on array
+        void setCol(uint32_t c, T* that){
+            assert(c>=0&&c<cols);
+            memcpy(nums[1]+c*rows,that,rows*sizeof(T));
+            for(uint32_t i=0;i<rows;i++){
+                nums[1][i*cols+c]=that[i];
+            }
+        }
+        // Set column c based on NumVector
+        void setCol(uint32_t c, NumVector<T> that){
+            assert(c>=0&&c<cols);
+            assert(that.getSize()==rows);
+            memcpy(nums[1]+c*rows,that,rows*sizeof(T));
+            for(uint32_t i=0;i<rows;i++){
+                nums[1][i*cols+c]=that[i];
+            }
         }
         // Returns the transpose
         Matrix<T> transposed() const{
@@ -448,8 +553,7 @@ template <typename T> class Matrix {
             temp[1] = (T*)malloc(resElems*sizeof(T));
             for(int i=0;i<resRows;i++){
                 for(int j=0;j<resCols;j++){
-                    NumVector<T>r(cols,(*this).row(i)),c(cols,that.col(j));
-                    // cerr<<"bruh";
+                    NumVector<T>r(cols,this->row(i)),c(cols,that.col(j));
                     T dotRes = r.dot(c);
                     temp[0][i*resCols+j]=dotRes;
                     temp[1][j*resRows+i]=dotRes;
@@ -469,7 +573,9 @@ template <typename T> class Matrix {
             temp[1] = (T*)malloc(resElems*sizeof(T));
             for(int i=0;i<resRows;i++){
                 for(int j=0;j<resCols;j++){
-                    NumVector<T>r(cols,(*this).row(i)),c(cols,that.col(j));
+                    NumVector<T>r(cols,this->row(i)),c(cols,that.col(j));
+                    r.adjust();
+                    c.adjust();
                     T dotRes = r.dot(c);
                     temp[0][i*resCols+j]=dotRes;
                     temp[1][j*resRows+i]=dotRes;
@@ -497,25 +603,255 @@ template <typename T> class Matrix {
             (*this) = (*this) * that;
             return (*this);
         }
-        // Echelon form reduction (without pivoting)
-        Matrix<T> echRedNoPivot() const{
-            
+        // Convert to float Matrix
+        Matrix<float> convert() const{
+            float* arr[2];
+            arr[0]=(float*)malloc(elements*sizeof(float));
+            arr[1]=(float*)malloc(elements*sizeof(float));
+            uint32_t i=0;
+            for(i=0;i<elements;i++){
+                arr[0][i]=(float)nums[0][i];
+                arr[1][i]=(float)nums[1][i];
+            }
+            Matrix<float>res(rows,cols,arr[0],arr[1]);
+            return res;
         }
-        // Pivoting
-        Matrix<T> pivot() const{
 
+        // Standard matrices
+        // Zero matrix
+        template <typename T2> friend Matrix<T2> ZeroMat(size_t dim);
+        // Identity matrix
+        template <typename T2> friend Matrix<T2> Iden(size_t dim);
+
+        // Row echelon form reduction (without pivoting)
+        Matrix<T> echRedNoPivot(std::function<T(T,T)> coTarg=__firstArg<T>, std::function<T(T,T)>coLead=__firstArg<T>) const{
+            uint32_t i = 0, j = 0, currLead=0;
+            Matrix<T> res(rows,cols,nums[0],nums[1]);
+            T leadVal=0;
+            for(i=0;i<rows;i++){
+                NumVector<T>curr = res.extractNumRow(i);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=i+1;j<rows;j++){
+                        NumVector<T>target = res.extractNumRow(j);
+                        T targLead=target[currLead];
+                        T uValTarg = coTarg(leadVal,targLead), uValCurr = coLead(targLead, leadVal); // uValTarg: update coefficient for target row, uValCurr: update coefficient for leading row
+                        target = uValTarg * target - uValCurr * curr;
+                        res.setRow(j,target);
+                        target.adjust();
+                    }
+                }
+            }
+            return res;
         }
         // Echelon form reduction (with pivoting)
-        Matrix<T> echRed() const{
-
+        Matrix<T> echRed(std::function<T(T,T)> coTarg=__firstArg<T>, std::function<T(T,T)>coLead=__firstArg<T>) const{
+            uint32_t i = 0, j = 0, currLead=0, k=0;
+            Matrix<T> res(rows,cols,nums[0],nums[1]);
+            T leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(res[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k)res.rswap(k,j);
+                NumVector<T>curr = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<T>target = res.extractNumRow(j);
+                        T targLead=target[currLead];
+                        T uValTarg = coTarg(leadVal,targLead), uValCurr = coLead(targLead, leadVal); // uValTarg: update coefficient for target row, uValCurr: update coefficient for leading row
+                        target = uValTarg * target - uValCurr * curr;
+                        res.setRow(j,target);
+                        target.adjust();
+                    }
+                }
+                k++;
+            }
+            return res;
+        }
+        // Reduced row Echelon form reduction (with pivoting)
+        Matrix<float> RREF() const{
+            int i = 0, j = 0, currLead=0, k=0;
+            Matrix<float> res = this->convert();
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(res[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k)res.rswap(k,j);
+                NumVector<float>curr = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)curr.leading().value);
+                    curr.adjust();
+                    res.setRow(i,curr);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+            }
+            return res;
+        }
+        // Determinant
+        float determinant() const{
+            if(rows!=cols) return 0;
+            int i = 0, j = 0, currLead=0, k=0;
+            float det = 1;
+            Matrix<float> res = this->convert();
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(res[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k){
+                    det *= -1;
+                    res.rswap(k,j);
+                }
+                NumVector<float>curr = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)leadVal);
+                    det *= (float)leadVal;
+                    curr.adjust();
+                    res.setRow(i,curr);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+            }
+            for(i=0;i<rows;i++){
+                det *= res[i][i];
+            }
+            return det;
         }
         // Matrix inverse
-        
+        Matrix<float> inverse() const {
+            assert(this->determinant() != 0.0);
+            int i = 0, j = 0, currLead=0, k=0;
+            Matrix<float> temp = (this->convert()), res = Iden<float>(rows);
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(temp[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k){
+                    res.rswap(k,j);
+                    temp.rswap(k,j);
+                }
+                NumVector<float>curr = temp.extractNumRow(k), currInv = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = temp.extractNumRow(j),targInv = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        targInv -= uValCurr * currInv;
+                        target.adjust();
+                        targInv.adjust();
+                        temp.setRow(j,target);
+                        res.setRow(j,targInv);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = temp.extractNumRow(i), currInv = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)leadVal);
+                    curr.adjust();
+                    currInv *= (1.0/(float)leadVal);
+                    currInv.adjust();
+                    temp.setRow(i,curr);
+                    res.setRow(i,currInv);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = temp.extractNumRow(j),targInv = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        targInv -= targLead * currInv;
+                        targInv.adjust();
+                        temp.setRow(j,target);
+                        res.setRow(j,targInv);
+                    }
+                }
+            }
+            return res;
+        }
+
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)
         implement swapping (done)
         implement matrix arithmetic (addition (done), multiplication (done!!!!), scaling (done))
+        implement row reduction (done)
         implement matrix inverse, determinant
         implement standard matrices
         implement rank
@@ -529,6 +865,21 @@ template <typename T> class Matrix {
 template<typename T> Matrix<T> operator*(T const& factor, Matrix<T> that){
     return that * factor;
 }
+// Standard matrices
+// Zero matrix
+template <typename T> Matrix<T> ZeroMat(size_t dim){
+    Matrix<T>res(dim,dim);
+    return res;
+}
+// Identity matrix
+template <typename T> Matrix<T> Iden(size_t dim){
+    Matrix<T>res(dim,dim);
+    for(int i=0;i<dim;i++){
+        res.set(i,i,1);
+    }
+    return res;
+}
+
 // Column vector class for any number type, supports vector operations (implemented as n * 1 matrix with additional vector arithmetic)
 template <typename T> class MatVector : protected Matrix<T> {
     protected:
