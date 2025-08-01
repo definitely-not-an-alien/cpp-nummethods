@@ -574,6 +574,8 @@ template <typename T> class Matrix {
             for(int i=0;i<resRows;i++){
                 for(int j=0;j<resCols;j++){
                     NumVector<T>r(cols,this->row(i)),c(cols,that.col(j));
+                    r.adjust();
+                    c.adjust();
                     T dotRes = r.dot(c);
                     temp[0][i*resCols+j]=dotRes;
                     temp[1][j*resRows+i]=dotRes;
@@ -843,6 +845,7 @@ template <typename T> class Matrix {
             }
             return res;
         }
+
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)

@@ -160,11 +160,16 @@ int main(){
         {2, 1},
         {1, 0}
     };
-    m1 = *(new numMethods::Matrix<int>(2,2,(int*)mat3));
+    m1 = *(new numMethods::Matrix<int>(3,3,(int*)mat2));
     printMat(m1);
-    cout<<m1.determinant()<<"\n";
+    cout<<"\n";
+    cout<<"det(m1): "<<m1.determinant()<<"\n";
+    cout<<"___m1____________\n";
+    printMat(m1);
+    cout<<"___m1^(-1)_______\n";
     m5 = m1.inverse();
     printMat(m5);
+    cout<<"___m1 * (m1^-1)__\n";
     m5 *= m1.convert();
     printMat(m5);
 }
