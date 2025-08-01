@@ -16,8 +16,20 @@ namespace numMethods{
 
 // Matrix class for any number type
 template <typename T> class Matrix;
+// Standard matrices
+// Zero matrix
+template <typename T> Matrix<T> ZeroMat(size_t dim);
+// Identity matrix
+template <typename T> Matrix<T> Iden(size_t dim);
+
 // Vector class for any number type, assumed to be column vector
 template <typename T> class NumVector;
+// Standard vectors
+// Zero vector
+template <typename T2> NumVector<T2> ZeroVect(size_t sz);
+// en base vector
+template <typename T2> NumVector<T2> UnitVect(size_t sz, uint32_t n);
+
 
 // Vector class for any number type, assumed to be column vector
 template <typename T> class NumVector {
@@ -218,6 +230,7 @@ template <typename T> class NumVector {
         template <typename T2> friend NumVector<T2> ZeroVect(size_t sz);
         // en base vector
         template <typename T2> friend NumVector<T2> UnitVect(size_t sz, uint32_t n);
+
         /*
         TODO: implement fixed size storage of nums (done)
         implement vector arithmetic (addition, dot product, scaling) (done)
@@ -231,13 +244,13 @@ template <typename T> NumVector<T> operator* (T const& factor, NumVector<T> that
     return that * factor;
 }
 // Zero vector of size sz
-template<typename T> NumVector<T> Zero(size_t sz) {
+template<typename T> NumVector<T> ZeroVect(size_t sz) {
     NumVector<T> res(sz);
     return sz;
 }
 // en base vector
-template <typename T> NumVector<T> Unit(size_t sz, uint32_t n){
-    NumVector<T> res = Zero<T>(sz);
+template <typename T> NumVector<T> UnitVect(size_t sz, uint32_t n){
+    NumVector<T> res = ZeroVect<T>(sz);
     res[n] = 1;
     return res;
 }

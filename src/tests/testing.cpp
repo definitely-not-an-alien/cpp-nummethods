@@ -154,7 +154,7 @@ int main(){
     printMat(m5);
     m5 = m1.RREF();
     printMat(m5);
-    numMethods::NumVector<int> r=numMethods::Unit<int>(5,1);
+    numMethods::NumVector<int> r=numMethods::UnitVect<int>(5,1);
     printVec(r);
     int mat3[2][2] = {
         {2, 1},
@@ -164,5 +164,7 @@ int main(){
     printMat(m1);
     cout<<m1.determinant()<<"\n";
     m5 = m1.inverse();
+    printMat(m5);
+    m5 *= m1.convert();
     printMat(m5);
 }
