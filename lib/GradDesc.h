@@ -846,13 +846,17 @@ template <typename T> class Matrix {
             return res;
         }
 
+        uint32_t rank() const {
+            
+        }
+
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)
         implement swapping (done)
         implement matrix arithmetic (addition (done), multiplication (done!!!!), scaling (done))
         implement row reduction (done)
-        implement matrix inverse, determinant
+        implement matrix inverse (done?), determinant (done?)
         implement standard matrices
         implement rank
         implement eigenvectors / eigenvalues
