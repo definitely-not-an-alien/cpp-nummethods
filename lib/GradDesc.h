@@ -901,7 +901,10 @@ template <typename T> class Matrix {
             return nonZeroRows;
         }
 
-
+        struct PLU{
+            Matrix<float>P, L, U;
+        };
+        
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)
