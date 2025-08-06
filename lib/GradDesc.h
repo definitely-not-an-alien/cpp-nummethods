@@ -847,8 +847,60 @@ template <typename T> class Matrix {
         }
 
         uint32_t rank() const {
-            
+            int i = 0, j = 0, currLead=0, k=0;
+            Matrix<float> res = this->convert();
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                for(j=k;j<rows;j++){
+                    if(res[j][i])break;
+                }
+                if(j==rows)continue;
+                if(j!=k)res.rswap(k,j);
+                NumVector<float>curr = res.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+                k++;
+            }
+            for(i=0;i<rows;i++){
+                NumVector<float>curr = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                currLead = curr.leading().index;
+                if(leadVal!=0){
+                    curr *= (1.0/(float)curr.leading().value);
+                    curr.adjust();
+                    res.setRow(i,curr);
+                    for(j=i-1;j>=0;j--){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        target -= targLead * curr;
+                        target.adjust();
+                        res.setRow(j,target);
+                    }
+                }
+            }
+            uint32_t nonZeroRows = 0, leader = 0;
+            for(nonZeroRows=0;nonZeroRows<rows;nonZeroRows++){
+                NumVector<float>curr = res.extractNumRow(i);
+                leadVal = curr.leading().value;
+                if(leadVal==0)break;
+            }
+            return nonZeroRows;
         }
+
 
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
@@ -857,8 +909,8 @@ template <typename T> class Matrix {
         implement matrix arithmetic (addition (done), multiplication (done!!!!), scaling (done))
         implement row reduction (done)
         implement matrix inverse (done?), determinant (done?)
-        implement standard matrices
-        implement rank
+        implement standard matrices (done)
+        implement rank (done)
         implement eigenvectors / eigenvalues
         implement diagonalisation
         implement classification
