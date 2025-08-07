@@ -1,0 +1,5 @@
+#include "NumVector.h"
+#include "NumMatrix.h"
+#include "NumConstants.h"
+#include "NumCalculus.h"
+#include "NumOptimisation.h"

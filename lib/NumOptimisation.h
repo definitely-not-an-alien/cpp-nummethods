@@ -1,0 +1,5 @@
+namespace numMethods{
+class Estimator {
+    
+};
+}
