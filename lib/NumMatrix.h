@@ -389,21 +389,26 @@ template <typename T> class Matrix {
         // Identity matrix
         template <typename T2> friend Matrix<T2> Iden(size_t dim);
 
+        // (when will you even use this)
         // Row echelon form reduction (without pivoting)
         Matrix<T> echRedNoPivot(std::function<T(T,T)> coTarg=__firstArg<T>, std::function<T(T,T)>coLead=__firstArg<T>) const{
             uint32_t i = 0, j = 0, currLead=0;
             Matrix<T> res(rows,cols,nums[0],nums[1]);
             T leadVal=0;
             for(i=0;i<rows;i++){
+                // Extract current row
                 NumVector<T>curr = res.extractNumRow(i);
+                // Check that it leads
                 assert(curr.leading().index>=currLead);
                 currLead = curr.leading().index;
                 leadVal = curr.leading().value;
                 if(leadVal){
+                    // Go down and eliminate every row below
                     for(j=i+1;j<rows;j++){
                         NumVector<T>target = res.extractNumRow(j);
                         T targLead=target[currLead];
                         T uValTarg = coTarg(leadVal,targLead), uValCurr = coLead(targLead, leadVal); // uValTarg: update coefficient for target row, uValCurr: update coefficient for leading row
+                        // (this is bad don't use this)
                         target = uValTarg * target - uValCurr * curr;
                         res.setRow(j,target);
                         target.adjust();
@@ -412,6 +417,8 @@ template <typename T> class Matrix {
             }
             return res;
         }
+
+        // (just use this)
         // Echelon form reduction (with pivoting)
         Matrix<T> echRed(std::function<T(T,T)> coTarg=__firstArg<T>, std::function<T(T,T)>coLead=__firstArg<T>) const{
             uint32_t i = 0, j = 0, currLead=0, k=0;
@@ -442,6 +449,7 @@ template <typename T> class Matrix {
             }
             return res;
         }
+
         // Reduced row Echelon form reduction (with pivoting)
         Matrix<float> RREF() const{
             int i = 0, j = 0, currLead=0, k=0;
@@ -471,6 +479,7 @@ template <typename T> class Matrix {
                 }
                 k++;
             }
+            // Reducing leading variables and converting to RREF
             for(i=0;i<rows;i++){
                 NumVector<float>curr = res.extractNumRow(i);
                 leadVal = curr.leading().value;
@@ -491,6 +500,8 @@ template <typename T> class Matrix {
             }
             return res;
         }
+
+        // (Gaussian reduction is OP)
         // Determinant
         float determinant() const{
             if(rows!=cols) return 0;
@@ -544,6 +555,7 @@ template <typename T> class Matrix {
                     }
                 }
             }
+            // If there's a zero row -> det = 0
             for(i=0;i<rows;i++){
                 det *= res[i][i];
             }
@@ -611,7 +623,7 @@ template <typename T> class Matrix {
             }
             return res;
         }
-
+        // Matrix rank
         uint32_t rank() const {
             int i = 0, j = 0, currLead=0, k=0;
             Matrix<float> res = this->convert();
@@ -667,6 +679,7 @@ template <typename T> class Matrix {
             return nonZeroRows;
         }
 
+        // Pivot, Lower-triangular, Upper-triangular
         struct PLU{
             Matrix<float> P(), L(), U();
         };
