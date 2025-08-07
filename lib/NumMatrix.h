@@ -668,9 +668,13 @@ template <typename T> class Matrix {
         }
 
         struct PLU{
-            Matrix<float>P, L, U;
+            Matrix<float> P(), L(), U();
         };
-        
+        // PLU Factorisation (pivoting only prevents division by 0)
+        PLU PLUfactorize() {
+            assert(rows==cols);
+
+        }
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
         implement transpose (done)
@@ -683,7 +687,9 @@ template <typename T> class Matrix {
         implement eigenvectors / eigenvalues
         implement diagonalisation
         implement classification
-        implement factorisation
+        implement factorisation (PLU (in progress), QR)
+        implement matrix norm
+        implement SVD
         */
 };
 // (for commutativity) Matrix scaling
