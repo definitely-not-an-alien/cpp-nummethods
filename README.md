@@ -52,13 +52,29 @@ T* getNums()
 A pointer of type `T*` to all entries in the vector / an array of type `T` containing all entries in the vector.
 
 ##### operator[]
+0-based vector access
+```c++
+T operator[](int i)
+```
+Returns the value of the `i`th element (0-based) (0 <= i < size of vector).
+
+```c++
+T& operator[](int i)
+```
+Returns the `i`th element (0-based) by reference.
 
 ##### ele()
 1-based vector access
 ```c++
 T ele(int i)
 ```
-Returns the value of the `i`th element (1 <= i <= size of vector).
+Returns the value of the `i`th element (1-based) (1 <= i <= size of vector).
+```c++
+T& ele(int i)
+```
+Returns the `i`th element (1-based) by reference.
+
+
 
 ### ```Matrix``` class
 Class for numerical matrices
