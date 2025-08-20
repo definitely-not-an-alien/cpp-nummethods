@@ -37,6 +37,7 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 - [Numerical Optimisation](#numerical-optimisation)
 
 ## Using the package
+<details>
 To use the package, download the `lib` folder containing all of the header files and place it into your project directory (or another folder added into your include path).
 
 All relevant header files are included in the header `NumMethodsCpp.h`, so adding the line 
@@ -46,10 +47,11 @@ All relevant header files are included in the header `NumMethodsCpp.h`, so addin
 will be sufficient.
 
 The `numMethods` namespace will have to be accessed to use the implemented functions.
+</details>
 
 ## ```numMethods``` namespace
 
-
+<details>
 Everything in this package is wrapped inside the `numMethods` namespace.
 
 To access a particular class or function, the `numMethods` namespace must be accessed.
@@ -70,10 +72,14 @@ For convenience's sake, you can write
 using namespace numMethods;
 ```
 but as with using other namespaces, there may be risks of name clashings.
+
+</details>
+
 ## Linear Algebra
 ### ```NumVector``` class
 Class for numerical vectors, assumed to be column vector.
 Indices of vector entries are 0-based.
+<details>
 
 #### Constructors
 ```c++
@@ -181,12 +187,14 @@ bool res3 = (a==d); // true
 
 ##### adjust()
 
+</details>
 
 ### ```Matrix``` class
 Class for numerical matrices
 
+<details>
 #### Constructors
-
+</details>
 
 ## Numerical Calculus
 
