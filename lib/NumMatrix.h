@@ -4,6 +4,9 @@
 #include <limits>
 #include <algorithm>
 #include <functional>
+
+#ifndef __NUMMATRIX_H__
+#define __NUMMATRIX_H__
 namespace numMethods {
 
 // Matrix class for any number type
@@ -737,3 +740,4 @@ template <typename T> class MatVector : protected Matrix<T> {
 };
 
 }
+#endif
