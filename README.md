@@ -16,16 +16,16 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
       - [`operator[]`](#operator)
       - [`ele()`](#ele)
       - [`operator=`](#operator-1)
-      - [`operator==`]
-      - [`operator+`]
-      - [`operator-`]
-      - [`operator*`]
-      - [`operator+=`, `operator-=`, `operator*=`]
-      - [`dot()`]
-      - [`norm()`]
-      - [`normalise()`]
-      - [`leading()`]
-      - [`adjust()`]
+      - [`operator==`](#operator-2)
+      - [`operator+`](#operator-3)
+      - [`operator-`](#operator-4)
+      - [`operator*`](#operator-5)
+      - [`operator+=`, `operator-=`, `operator*=`](#operator-operator--operator)
+      - [`dot()`](#dot)
+      - [`norm()`](#norm)
+      - [`normalise()`](#normalise)
+      - [`leading()`](#leading)
+      - [`adjust()`](#adjust)
     - [Standard Vectors]
       - [`ZeroVect`]
       - [`UnitVect`]
@@ -64,6 +64,12 @@ whereas
 NumVector<int> a(5);
 ```
 might not compile.
+
+For convenience's sake, you can write
+```c++
+using namespace numMethods;
+```
+but as with using other namespaces, there may be risks of name clashings.
 ## Linear Algebra
 ### ```NumVector``` class
 Class for numerical vectors, assumed to be column vector.
@@ -141,7 +147,7 @@ numMethods::NumVector<int> b = a; // b has size 5 and contains {0,1,2,3,4}
 ```c++
 bool operator== (NumVector<T> &that)
 ```
-Checks if two `NumVector<T>` objects are equal.
+Equality check for two `NumVector<T>` objects. Returns `true` if the size and values of both objects are equal, returns `false` otherwise (order of elements matter).
 
 _Note: the types `T` of the two objects must be equal_
 
@@ -157,6 +163,23 @@ bool res2 = (a==c); // false
 bool res3 = (a==d); // true
 ```
 
+##### operator+
+
+##### operator-
+
+##### operator*
+
+##### operator+=, operator-=, operator*=
+
+##### dot()
+
+##### norm()
+
+##### normalise()
+
+##### leading()
+
+##### adjust()
 
 
 ### ```Matrix``` class
