@@ -15,7 +15,20 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
       - [`getNums()`](#getnums)
       - [`operator[]`](#operator)
       - [`ele()`](#ele)
-      - 
+      - [`operator=`](#operator-1)
+      - [`operator==`]
+      - [`operator+`]
+      - [`operator-`]
+      - [`operator*`]
+      - [`operator+=`, `operator-=`, `operator*=`]
+      - [`dot()`]
+      - [`norm()`]
+      - [`normalise()`]
+      - [`leading()`]
+      - [`adjust()`]
+    - [Standard Vectors]
+      - [`ZeroVect`]
+      - [`UnitVect`]
   - [`Matrix` class](#matrix-class)
     - [Constructors](#constructors-1)
 - [Numerical Calculus](#numerical-calculus)
@@ -123,6 +136,27 @@ int arr[5] = {0,1,2,3,4};
 numMethods::NumVector<int> a(5,arr);
 numMethods::NumVector<int> b = a; // b has size 5 and contains {0,1,2,3,4}
 ```
+
+##### operator==
+```c++
+bool operator== (NumVector<T> &that)
+```
+Checks if two `NumVector<T>` objects are equal.
+
+_Note: the types `T` of the two objects must be equal_
+
+Usage:
+```c++
+int arr[5] = {0,1,2,3,4};
+int arr2[4] = {0,1,2,3};
+int arr3[5] = {4,3,2,1,0};
+numMethods::NumVector<int> a(5,arr), b(4,arr2), c(5,arr3), d(5,arr);
+
+bool res1 = (a==b); // false
+bool res2 = (a==c); // false
+bool res3 = (a==d); // true
+```
+
 
 
 ### ```Matrix``` class
