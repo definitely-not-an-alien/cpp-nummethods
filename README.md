@@ -195,9 +195,24 @@ _Note: the sizes and types of the two vectors must be equal._
 
 ##### operator*
 
+```c++
+NumVector<T> operator*(T& factor)
+```
+```c++
+NumVector<T> operator*(T const& factor)
+```
 
+Performs vector scaling on a `NumVector<T>` objects by some `factor` of type `T` and returns the resulting `NumVector<T>`. Scaling is performed entry by entry (i.e. `res[i] = this[i] * factor` where `res` is the returned vector of `this * factor`).
+
+_Note: the types of `this` and `factor` must be equal._
 
 ##### operator+=, operator-=, operator*=
+
+Overloaded assignment operators
+
+```c++
+
+```
 
 ##### dot()
 
