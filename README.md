@@ -6,15 +6,19 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 
 ### Contents
 - [Linear Algebra](#linear-algebra)
-- - `NumVector` class
-- - - [Constructors](#constructors)
-- - - [Methods](#methods)
-- - - - [`getSize()`](#getsize)
-- - `Matrix` class
-- - - [Constructors](#constructors-1)
+  - [`NumVector` class](#numvector-class)
+    - [Constructors](#constructors)
+    - [Methods](#methods)
+      - [`getSize()`](#getsize)
+      - [`getNums()`](#getnums)
+      - [`operator[]`](#operator)
+      - [`ele()`](#ele)
+      - 
+  - [`Matrix` class](#matrix-class)
+    - [Constructors](#constructors-1)
 - [Numerical Calculus](#numerical-calculus)
 
-- * `Differentiable` class
+  * `Differentiable` class
 - [Numerical Optimisation](#numerical-optimisation)
 
 ## Linear Algebra
@@ -37,10 +41,24 @@ Creates an empty `NumVector` object of size `sz` taking values of type `T` from 
 
 ##### getSize()
 ```c++
-getSize()
+size_t getSize()
 ```
-Number of entries in the `NumVector` object - defaults to 0 if entries have not been initialised.
+Number of entries in the `NumVector` object - defaults to `0` if entries have not been initialised.
 
+##### getNums()
+```c++
+T* getNums()
+```
+A pointer of type `T*` to all entries in the vector / an array of type `T` containing all entries in the vector.
+
+##### operator[]
+
+##### ele()
+1-based vector access
+```c++
+T ele(int i)
+```
+Returns the value of the `i`th element (1 <= i <= size of vector).
 
 ### ```Matrix``` class
 Class for numerical matrices
