@@ -216,14 +216,43 @@ Overloaded assignment operators
 ```
 
 ##### dot()
+```c++
+T dot(NumVector<T> &that)
+```
+Returns the dot product of two `NumVector<T>` objects.
 
 ##### norm()
+```c++
+float norm()
+```
+Returns the Euclidean norm of the `NumVector<T>` object as a `float`.
 
 ##### normalise()
+```c++
+NumVector<float> normalise()
+```
+Returns the normalised vector of the `NumVector<T>` object as a `NumVector<float>` object.
 
 ##### leading()
+Return type `__entry`:
+```c++
+struct __entry {
+  uint32_t index;
+  T value;
+}
+```
+```c++
+__entry leading()
+```
+Returns the `{index, value}` of the first non-zero entry (index being 0-based).
+
+Returns `{size, 0}` if there are no non-zero entries.
 
 ##### adjust()
+```c++
+void adjust()
+```
+In-place adjustment of the vector for floating point errors (i.e. `-0`).
 
 </details>
 
