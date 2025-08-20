@@ -18,8 +18,8 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
       - [`operator=`](#operator-1)
       - [`operator==`](#operator-2)
       - [`operator+`](#operator-3)
-      - [`operator-`](#operator-4)
-      - [`operator*`](#operator-5)
+      - [`operator-`](#operator-)
+      - [`operator*`](#operator-4)
       - [`operator+=`, `operator-=`, `operator*=`](#operator-operator--operator)
       - [`dot()`](#dot)
       - [`norm()`](#norm)
@@ -192,6 +192,7 @@ NumVector<T> operator-(const NumVector<T> &that)
 Performs vector subtraction on two `NumVector<T>` objects and returns the resulting `NumVector<T>`. Subtraction is performed left-to-right, entry by entry (i.e. `res[i] = this[i] - that[i]` where `res` is the returned vector of `this - that`).
 
 _Note: the sizes and types of the two vectors must be equal._
+
 
 ##### operator*
 
