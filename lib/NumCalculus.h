@@ -1,3 +1,5 @@
+#ifndef __NUMCALCULUS_H__
+#define __NUMCALCULUS_H__
 namespace numMethods {
 class Differentiable {
     protected:
@@ -7,3 +9,5 @@ class Differentiable {
         }
 };
 }
+
+#endif

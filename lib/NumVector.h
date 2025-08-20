@@ -9,7 +9,8 @@
 using namespace std;
 
 // namespace plt = matplotlibcpp;
-
+#ifndef __NUMVECTOR_H__
+#define __NUMVECTOR_H__
 namespace numMethods{
 
 // Matrix class for any number type
@@ -258,7 +259,8 @@ template <typename T> T __firstArg(T a, T b){
 
 
 }
-       
+    
+#endif
 /*
 
  */
