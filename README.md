@@ -28,7 +28,7 @@ To use the package, download the `lib` folder containing all of the header files
 
 All relevant header files are included in the header `NumMethodsCpp.h`, so adding the line 
 ```c++
-#include "numMethodsCpp.h"
+#include "NumMethodsCpp.h"
 ```
 will be sufficient.
 
