@@ -26,9 +26,9 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
       - [`normalise()`](#normalise)
       - [`leading()`](#leading)
       - [`adjust()`](#adjust)
-    - [Standard Vectors]
-      - [`ZeroVect`]
-      - [`UnitVect`]
+    - [Standard Vectors](#standard-vector-objects)
+      - [`ZeroVect`](#zerovect)
+      - [`UnitVect`](#unitvect)
   - [`Matrix` class](#matrix-class)
     - [Constructors](#constructors-1)
 - [Numerical Calculus](#numerical-calculus)
@@ -254,7 +254,30 @@ void adjust()
 ```
 In-place adjustment of the vector for floating point errors (i.e. `-0`).
 
+
+#### Standard Vector Objects
+##### ZeroVect
+```c++
+NumVector<T> ZeroVect(size_t sz)
+```
+Creates a zero vector `NumVector<T>` of with `sz` elements.
+
+Usage:
+```c++
+numMethods::NumVector<int> a = numMethods::ZeroVect<int>(5);
+```
+##### UnitVect
+```c++
+NumVector<T> UnitVect(size_t sz, uint32_t n)
+```
+Creates the base vector `en` for the space R^`sz`.
+
+Usage:
+```c++
+numMethods::NumVector<int> a = numMethods::UnitVect<int>(5,3);
+```
 </details>
+
 
 ### ```Matrix``` class
 Class for numerical matrices
