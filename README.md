@@ -5,6 +5,8 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 ## Documentation
 
 ### Contents
+- [Using the package](#using-the-package)
+- [`numMethods` namespace](#nummethods-namespace)
 - [Linear Algebra](#linear-algebra)
   - [`NumVector` class](#numvector-class)
     - [Constructors](#constructors)
@@ -21,6 +23,27 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
   * `Differentiable` class
 - [Numerical Optimisation](#numerical-optimisation)
 
+## Using the package
+
+All relevant header files are included in the header `NumMethodsCpp.h`.
+
+## ```numMethods``` namespace
+
+
+Everything in this package is wrapped inside the `numMethods` namespace.
+
+To access a particular class or function, the `numMethods` namespace must be accessed.
+
+Example:
+```c++
+#include "NumMethodsCpp.h"
+numMethods::NumVector<int> a(5); // Empty integer NumVector object of size 5.
+```
+whereas
+```c++
+NumVector<int> a(5);
+```
+might not compile.
 ## Linear Algebra
 ### ```NumVector``` class
 Class for numerical vectors, assumed to be column vector.
@@ -36,6 +59,12 @@ Creates an empty `NumVector` object of size `sz`.
 NumVector(uint32_t sz, T *dataArr)
 ```
 Creates an empty `NumVector` object of size `sz` taking values of type `T` from `dataArr`. Order of values follows that of `dataArr`.
+
+Usage:
+```c++
+int arr[5] = {0,1,2,3,4};
+numMethods::NumVector<int> a(5,arr);
+```
 
 #### Methods
 
@@ -74,6 +103,19 @@ T& ele(int i)
 ```
 Returns the `i`th element (1-based) by reference.
 
+##### operator=
+Assignment
+```c++
+NumVector<T>& operator= (const NumVector<T>& that)
+```
+Assigns the values and size of a `NumVector` object to take those of the argument `that`.
+
+Usage:
+```c++
+int arr[5] = {0,1,2,3,4};
+numMethods::NumVector<int> a(5,arr);
+numMethods::NumVector<int> b = a; // b has size 5 and contains {0,1,2,3,4}
+```
 
 
 ### ```Matrix``` class
