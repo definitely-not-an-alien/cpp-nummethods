@@ -24,8 +24,15 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 - [Numerical Optimisation](#numerical-optimisation)
 
 ## Using the package
+To use the package, download the `lib` folder containing all of the header files and place it into your project directory (or another folder added into your include path).
 
-All relevant header files are included in the header `NumMethodsCpp.h`.
+All relevant header files are included in the header `NumMethodsCpp.h`, so adding the line 
+```c++
+#include "numMethodsCpp.h"
+```
+will be sufficient.
+
+The `numMethods` namespace will have to be accessed to use the implemented functions.
 
 ## ```numMethods``` namespace
 
