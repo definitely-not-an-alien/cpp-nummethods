@@ -36,8 +36,8 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
   * `Differentiable` class
 - [Numerical Optimisation](#numerical-optimisation)
 
-## Using the package
-<details>
+## Using the Package 
+<details open>
 To use the package, download the `lib` folder containing all of the header files and place it into your project directory (or another folder added into your include path).
 
 All relevant header files are included in the header `NumMethodsCpp.h`, so adding the line 
@@ -79,7 +79,7 @@ but as with using other namespaces, there may be risks of name clashings.
 ### ```NumVector``` class
 Class for numerical vectors, assumed to be column vector.
 Indices of vector entries are 0-based.
-<details>
+<details open>
 
 #### Constructors
 ```c++
@@ -170,10 +170,32 @@ bool res3 = (a==d); // true
 ```
 
 ##### operator+
+```c++
+NumVector<T> operator+(NumVector<T> &that)
+```
+```c++
+NumVector<T> operator+(const NumVector<T> &that)
+```
+
+Performs vector addition on two `NumVector<T>` objects and returns the resulting `NumVector<T>`. Addition is performed left-to-right, entry by entry (i.e. `res[i] = this[i] + that[i]` where `res` is the returned vector of `this + that`).
+
+_Note: the sizes and types of the two vectors must be equal._
 
 ##### operator-
+```c++
+NumVector<T> operator-(NumVector<T> &that)
+```
+```c++
+NumVector<T> operator-(const NumVector<T> &that)
+```
+
+Performs vector subtraction on two `NumVector<T>` objects and returns the resulting `NumVector<T>`. Subtraction is performed left-to-right, entry by entry (i.e. `res[i] = this[i] - that[i]` where `res` is the returned vector of `this - that`).
+
+_Note: the sizes and types of the two vectors must be equal._
 
 ##### operator*
+
+
 
 ##### operator+=, operator-=, operator*=
 
@@ -193,6 +215,7 @@ bool res3 = (a==d); // true
 Class for numerical matrices
 
 <details>
+
 #### Constructors
 </details>
 
