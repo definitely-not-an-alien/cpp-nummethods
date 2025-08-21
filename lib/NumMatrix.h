@@ -689,7 +689,49 @@ template <typename T> class Matrix {
         // PLU Factorisation (pivoting only prevents division by 0)
         PLU PLUfactorize() {
             assert(rows==cols);
-
+            Matrix<float> P = Iden<float>(rows), L = Iden<float>(rows), U=this->convert();
+            int i,j,k,currLead=0;
+            float leadVal=0;
+            k = 0;
+            for(i=0;i<rows;i++){
+                float maximum = 0;
+                int ind = rows;
+                for(j=k;j<rows;j++){
+                    if(U[j][i]){
+                        if(abs(U[j][i])>maximum){
+                            ind=j;
+                            maximum=abs(U[j][i]);
+                        }
+                    }
+                }
+                assert(ind!=rows);
+                if(ind!=k){
+                    U.rswap(k,ind);
+                    P.rswap(k,ind);
+                }
+                NumVector<float>curr = U.extractNumRow(k);
+                assert(curr.leading().index>=currLead);
+                currLead = curr.leading().index;
+                leadVal = curr.leading().value;
+                if(leadVal){
+                    for(j=k+1;j<rows;j++){
+                        NumVector<float>target = res.extractNumRow(j);
+                        float targLead=target[currLead];
+                        if(targLead==0)continue;
+                        float uValCurr = targLead/leadVal;
+                        target -= uValCurr * curr;
+                        target.adjust();
+                        U.setRow(j,target);
+                        L.set(j,k,uValCurr);
+                    }
+                }
+                k++;
+            }
+            PLU ret;
+            ret.P = P; 
+            ret.L = L;  
+            ret.U = U;  
+            return ret;
         }
         /*
         TODO: implement matrix storage (sequence of vectors? 2D array?) (done)
