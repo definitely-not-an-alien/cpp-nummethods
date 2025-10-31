@@ -715,7 +715,7 @@ template <typename T> class Matrix {
                 leadVal = curr.leading().value;
                 if(leadVal){
                     for(j=k+1;j<rows;j++){
-                        NumVector<float>target = res.extractNumRow(j);
+                        NumVector<float>target = U.extractNumRow(j);
                         float targLead=target[currLead];
                         if(targLead==0)continue;
                         float uValCurr = targLead/leadVal;
