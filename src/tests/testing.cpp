@@ -172,4 +172,47 @@ int main(){
     cout<<"___m1 * (m1^-1)__\n";
     m5 *= m1.convert();
     printMat(m5);
+    cout<<"QR test\n";
+    double mat4[4][4] = {
+        {1,0,0,0},
+        {0,1,0,0},
+        {0,0,1.0/sqrt(2.0),1.0/sqrt(2.0)},
+        {0,0,-1.0/sqrt(2.0),1.0/sqrt(2.0)}
+    };
+    double mat5[4][4] = {
+        {1,0,0,0},
+        {0,1.0/sqrt(2.0),1.0/sqrt(2.0),0},
+        {0,-1.0/sqrt(2.0),1.0/sqrt(2.0),0},
+        {0,0,0,1}
+    };
+    double mat6[4][2] = {
+        {1,1},
+        {1,2},
+        {1,3},
+        {1,4}
+    };
+    numMethods::Matrix<double> m6(4,4,(double*)mat4);
+    numMethods::Matrix<double> m7(4,4,(double*)mat5);
+    numMethods::Matrix<double> m8(4,2,(double*)mat6);
+    numMethods::Matrix<double> m9 = (m6*m8);
+    printMat(m9);
+    m9 = m7*m9;
+    printMat(m9);
+
+    double mat7[3][3]={
+        {1, 0, 0},
+        {1, 1, 0},
+        {1, 3, 1}
+    };
+    double mat8[3][1]={
+        {-1},
+        {-1},
+        {1}
+    };
+    numMethods::Matrix<double> m10(3,3, (double*)mat7);
+    numMethods::Matrix<double> m11(3,1, (double*)mat8);
+    numMethods::Matrix<double> m12 = (m11.transposed() * m10 * m11)[0][0]/(m11.transposed() * m10.transposed()*m10 * m11)[0][0] * m11;
+    cout<<"---------\n";
+    printMat(m11);
+    printMat(m12);
 }
