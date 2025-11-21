@@ -3,3 +3,5 @@
 #include "NumConstants.h"
 #include "NumCalculus.h"
 #include "NumOptimisation.h"
+#include "MatMethods.h"
+#include "NumSparseMatrix.h"
