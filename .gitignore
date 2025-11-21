@@ -1,3 +1,4 @@
 /.DS_Store
 /.vscode
 /lib/matplotlibcpp.h
+/src/tests
