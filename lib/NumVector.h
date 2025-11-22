@@ -218,10 +218,15 @@ template <typename T> class NumVector {
         // Adjust for floating point errors
         void adjust() {
             for(uint32_t pos=0;pos<size;pos++){
-                if(*(nums+pos) == 0.000){
+                if(*(nums+pos) == 0.000 || (*(nums+pos))<numeric_limits<T>::epsilon()){
                     *(nums+pos) = +0.0;
                 }
             }
+        }
+        // Convert to N * 1 column matrix
+        Matrix<T> toMat(){
+            Matrix<T>__ret(size,1,nums);
+            return __ret;
         }
 
         // Standard vectors

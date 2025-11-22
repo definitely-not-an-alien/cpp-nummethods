@@ -752,16 +752,16 @@ template <typename T> Matrix<T> Iden(size_t dim){
 }
 
 // Column vector class for any number type, supports vector operations (implemented as n * 1 matrix with additional vector arithmetic)
-template <typename T> class MatVector : protected Matrix<T> {
-    protected:
+// template <typename T> class MatVector : protected Matrix<T> {
+//     protected:
 
-    public:
-        MatVector() : Matrix<T>(){
-        }
-        MatVector(uint32_t size, T * dataArr) : Matrix<T>(){
+//     public:
+//         MatVector() : Matrix<T>(){
+//         }
+//         MatVector(uint32_t size, T * dataArr) : Matrix<T>(){
 
-        }
-};
+//         }
+// };
 
 }
 #endif
