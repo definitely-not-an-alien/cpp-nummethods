@@ -7,6 +7,7 @@ This is a C++ header file for linear algebra, numerical integration, and numeric
 ### Contents
 - [Using the package](#using-the-package)
 - [`numMethods` namespace](#nummethods-namespace)
+  - [`matMethods` namespace](#matmethods-namespace)
 - [Linear Algebra](#linear-algebra)
   - [`NumVector` class](#numvector-class)
     - [Constructors](#constructors)
@@ -72,6 +73,17 @@ For convenience's sake, you can write
 using namespace numMethods;
 ```
 but as with using other namespaces, there may be risks of name clashings.
+
+### ```matMethods``` namespace
+Matrix algorithms and methods such as the PLU and QR factorizations are wrapped in the ```matMethods``` subnamespace.
+
+Example:
+```c++
+int test[3][3] = {{1, 2, 3},{4, 5, 6},{7,8,7}};
+numMethods::Matrix<int> m1(3,3,(int*)test);
+auto res = numMethods::matMethods::PLUfactorize(m1.convert());
+```
+The snippet stores the resulting P, L, U matrices in `res`.
 
 </details>
 

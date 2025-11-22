@@ -25,7 +25,7 @@ template <typename T> class NumVector;
 template <typename T2> NumVector<T2> ZeroVect(size_t sz);
 // en base vector
 template <typename T2> NumVector<T2> UnitVect(size_t sz, uint32_t n);
-namespace MatMethods {
+namespace matMethods {
 
 
 // Pivot, Lower-triangular, Upper-triangular
