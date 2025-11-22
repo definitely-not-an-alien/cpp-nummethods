@@ -355,6 +355,38 @@ template <typename T> class Matrix {
             free(temp[1]);
             return res;
         }
+        // Matrix-vector multiplication
+        NumVector<T> operator*(const NumVector<T>& that) const{
+            assert(cols==that.getSize());
+            uint32_t resElems = rows;
+            T* __temp;
+            __temp = (T*)malloc(resElems*sizeof(T));
+            for(int i=0;i<resElems;i++){
+                NumVector<T>r(cols,this->row(i));
+                r.adjust();
+                T dotRes = r.dot(that);
+                __temp[i]=dotRes;
+            }
+            NumVector<T> __res(resElems,__temp);
+            free(__temp);
+            return __res;
+        }
+        // Matrix-vector multiplication
+        NumVector<T> operator*(NumVector<T>& that) const{
+            assert(cols==that.getSize());
+            uint32_t resElems = rows;
+            T* __temp;
+            __temp = (T*)malloc(resElems*sizeof(T));
+            for(int i=0;i<resElems;i++){
+                NumVector<T>r(cols,this->row(i));
+                r.adjust();
+                T dotRes = r.dot(that);
+                __temp[i]=dotRes;
+            }
+            NumVector<T> __res(resElems,__temp);
+            free(__temp);
+            return __res;
+        }
         // More operator overloads
         Matrix<T> operator+=(const Matrix<T>& that){
             (*this) = (*this) + that;

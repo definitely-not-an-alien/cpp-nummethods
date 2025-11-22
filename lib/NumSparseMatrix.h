@@ -13,7 +13,7 @@ template <typename T> class SparseMatrix {
     protected:
         size_t rows = 0, cols = 0, elements = 0;
         T* entries;
-        uint32_t rpos, cpos;
+        uint32_t* rpos, *cpos;
     public:
         // Constructors
         SparseMatrix(){
@@ -35,7 +35,6 @@ template <typename T> class SparseMatrix {
             rows = r;
             cols = c;
             elements = 0;
-            assert(sizeof(ent)==elements);
             for(uint32_t __i=0;__i<r;__i++){
                 for(uint32_t __j=0;__j<c;__j++){
                     elements+=(ent[__i*c+__j]!=0);
@@ -96,7 +95,7 @@ template <typename T> class SparseMatrix {
                 __temp[__i]=0;
             }
             for(uint32_t __i=0;__i<elements;__i++){
-                __temp[rpos[__i]]+=elements[__i]*that[cpos[__i]];
+                __temp[rpos[__i]]+=entries[__i]*that[cpos[__i]];
             }
             NumVector<T> __ret(rows,__temp);
             free(__temp);
