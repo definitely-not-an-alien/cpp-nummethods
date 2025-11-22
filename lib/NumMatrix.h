@@ -231,8 +231,8 @@ template <typename T> class Matrix {
             rows = that.getRows();
             cols = that.getCols();
             elements = rows*cols;
-            free(nums[0]);
-            free(nums[1]);
+            // free(nums[0]);
+            // free(nums[1]);
             nums[0] = (T*)malloc(elements*sizeof(T));
             nums[1] = (T*)malloc(elements*sizeof(T));
             memcpy(nums[0],that.getNums(0),elements*sizeof(T));

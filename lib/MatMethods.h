@@ -54,7 +54,12 @@ PLU PLUfactorize(Matrix<float>& __this) {
         assert(ind!=__rows);
         if(ind!=__k){
             U.rswap(__k,ind);
-            P.rswap(__k,ind);
+            P.cswap(__k,ind);
+            for(__j=0;__j<__k;__j++){
+                float __t = L[ind][__j];
+                L.set(ind,__j,L[__k][__j]);
+                L.set(__k,__j,__t);
+            }
         }
         NumVector<float>curr = U.extractNumRow(__k);
         assert(curr.leading().index>=currLead);
@@ -101,7 +106,12 @@ PLU PLUfactorize(const Matrix<float>& __this) {
         assert(ind!=__rows);
         if(ind!=__k){
             U.rswap(__k,ind);
-            P.rswap(__k,ind);
+            P.cswap(__k,ind);
+            for(__j=0;__j<__k;__j++){
+                float __t = L[ind][__j];
+                L.set(ind,__j,L[__k][__j]);
+                L.set(__k,__j,__t);
+            }
         }
         NumVector<float>curr = U.extractNumRow(__k);
         assert(curr.leading().index>=currLead);
