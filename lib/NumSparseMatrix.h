@@ -35,6 +35,7 @@ template <typename T> class SparseMatrix {
             rows = r;
             cols = c;
             elements = 0;
+            assert(sizeof(ent)==elements);
             for(uint32_t __i=0;__i<r;__i++){
                 for(uint32_t __j=0;__j<c;__j++){
                     elements+=(ent[__i*c+__j]!=0);
